@@ -2,14 +2,33 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(express.json());
+
+app.get('/api/first', (req, res) => {
+  res.json({ message: 'Hello from the test route!' });
+});
 
 app.get('/api/test', (req, res) => {
   res.json(articles);
 });
 
-
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+app.post('/api/articles', (req,res) => {
+const{title, content} = req.body;
+  if(!title || !content) {
+  return res.status(400).json({ eorror : 'Title and content are requiered'});
+  }
+  const newID= Math.max(...articles.map(articles => articles.id))+1;
+  const newArticle = {
+    id: newID,
+    title,
+    content
+  };
+  articles.push(newArticle);
+  res.status(201).json(newArticle);
 });
 
 const articles =[
