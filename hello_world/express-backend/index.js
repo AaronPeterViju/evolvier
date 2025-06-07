@@ -31,6 +31,36 @@ const{title, content} = req.body;
   res.status(201).json(newArticle);
 });
 
+app.delete('/api/articles/:id', (req, res) => {
+const id = parseInt(req.params.id);
+const index = articles.findIndex (articles => articles.id === id);
+
+if (index === -1){
+  return res.status(404).json({ error: 'Article not found'});
+}
+
+const deletedArticle = articles.splice(index, 1)[0];
+res.json(deletedArticle);
+});
+
+app.put('/api/articles/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, content } = req.body;
+
+  if(!title || !content) {
+    return res.status(400).json({ error: 'Title and content are required' });
+  }
+
+  const article = articles.find(article => article.id === id);
+
+  if (!article) {
+    return res.status(404).json({ error: 'Article NOT FOUND' })
+  }
+  article.title = title;
+  article.content = content;
+  res.json(article);
+});
+
 const articles =[
   {
     id: 1,
