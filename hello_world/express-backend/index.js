@@ -19,7 +19,7 @@ app.listen(PORT, () => {
 app.post('/api/articles', (req,res) => {
 const{title, content} = req.body;
   if(!title || !content) {
-  return res.status(400).json({ eorror : 'Title and content are requiered'});
+  return res.status(400).json({ eorror : 'Title and content are required'});
   }
   const newID= Math.max(...articles.map(articles => articles.id))+1;
   const newArticle = {
