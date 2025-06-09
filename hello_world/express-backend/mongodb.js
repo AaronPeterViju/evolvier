@@ -13,7 +13,9 @@ mongoose.connect(mongoURI)
 
 const ArticleSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  content: { type: String, required: true }
+  content: { type: String, required: true },
+  author: { type: String, required: true },
+  date: { type:Date, default: Date.now }
 });
 
 const Article = mongoose.model('Article', ArticleSchema);
@@ -24,7 +26,7 @@ app.get('/api/first', (req, res) => {
 
 app.get('/api/test', async (req, res) => {
   try {
-    const articles = await Article.find();
+    const articles = await Article.find().sort({ date:-1 });
     res.json(articles);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch articles' });
@@ -32,13 +34,13 @@ app.get('/api/test', async (req, res) => {
 });
 
 app.post('/api/articles', async (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content) {
-    return res.status(400).json({ error: 'Title and content are required' });
+  const { title, content, author } = req.body;
+  if (!title || !content || !author) {
+    return res.status(400).json({ error: 'Title, author and content are required' });
   }
 
   try {
-    const newArticle = new Article({ title, content });
+    const newArticle = new Article({ title, content, author,date: new Date() });
     await newArticle.save();
     res.status(201).json(newArticle);
   } catch (err) {
@@ -47,15 +49,15 @@ app.post('/api/articles', async (req, res) => {
 });
 
 app.put('/api/articles/:id', async (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content) {
-    return res.status(400).json({ error: 'Title and content are required' });
+  const { title, content, author } = req.body;
+  if (!title || !content || !author) {
+    return res.status(400).json({ error: 'Title, author and content are required' });
   }
 
   try {
     const updatedArticle = await Article.findByIdAndUpdate(
       req.params.id,
-      { title, content },
+      { title, content, author },
       { new: true, runValidators: true }
     );
 
