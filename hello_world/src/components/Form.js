@@ -10,6 +10,8 @@ function Form() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetchArticles();
@@ -30,13 +32,28 @@ function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/articles', {
-        title,
-        content,
-        author
-      });
-      
-      setArticles([response.data, ...articles]);
+      if (editMode) {
+        const response = await axios.put(`http://localhost:5000/api/articles/${editingId}`, {
+          title,
+          content,
+          author
+        });
+        
+        setArticles(articles.map(article => 
+          article._id === editingId ? response.data : article
+        ));
+        
+        setEditMode(false);
+        setEditingId(null);
+      } else {
+        const response = await axios.post('http://localhost:5000/api/articles', {
+          title,
+          content,
+          author
+        });
+        
+        setArticles([response.data, ...articles]);
+      }
       
       setTitle('');
       setContent('');
@@ -58,6 +75,23 @@ function Form() {
     }
   };
 
+  const handleEdit = (article) => {
+    setEditMode(true);
+    setEditingId(article._id);
+    setTitle(article.title);
+    setContent(article.content);
+    setAuthor(article.author);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setEditingId(null);
+    setTitle('');
+    setContent('');
+    setAuthor('');
+  };
+
   if (loading) return (
     <div className="App">
       <Header />
@@ -74,7 +108,6 @@ function Form() {
       <main className="main-content">
         {error && <div style={{ color: 'red', marginBottom: '20px' }}>{error}</div>}
         
-        {/* Article Form */}
         <form onSubmit={handleSubmit} style={{ marginBottom: '40px' }}>
           <div style={{ marginBottom: '15px' }}>
             <label>Title:</label>
@@ -105,22 +138,40 @@ function Form() {
               style={{ width: '100%', padding: '8px' }}
             />
           </div>
-          <button 
-            type="submit"
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Submit
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              type="submit"
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              {editMode ? 'Update Article' : 'Submit'}
+            </button>
+            
+            {editMode && (
+              <button 
+                type="button"
+                onClick={handleCancel}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
 
-        {/* Articles List */}
         <div>
           <h2>Published Articles</h2>
           {articles.map(article => (
@@ -141,20 +192,34 @@ function Form() {
                   {new Date(article.date).toLocaleDateString()}
                 </span>
               </div>
-              <button
-                onClick={() => handleDelete(article._id)}
-                style={{
-                  marginTop: '10px',
-                  padding: '5px 10px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Delete
-              </button>
+              <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                <button
+                  onClick={() => handleEdit(article)}
+                  style={{
+                    padding: '5px 10px',
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(article._id)}
+                  style={{
+                    padding: '5px 10px',
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
           {articles.length === 0 && <p>No articles available</p>}
