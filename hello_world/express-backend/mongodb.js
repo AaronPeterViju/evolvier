@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
+app.use(cors());
 
 const mongoURI = 'mongodb+srv://aaronevolvier:aaron%40evolvier9599@cluster0.wmggkpl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
