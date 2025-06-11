@@ -11,8 +11,14 @@ function HomePage() {
   return (
     <div className="App">
       <Header />
-      <UserGreeting name={name} onNameChange={setName} />
-      <MainContent />
+      <main className="main-content">
+        <div className="blog-header">
+          <h1>Welcome to Our Blog Platform</h1>
+          <p>Share your thoughts, read interesting articles, and join our community</p>
+        </div>
+        <UserGreeting name={name} onNameChange={setName} />
+        <MainContent />
+      </main>
       <Footer />
     </div>
   );
