@@ -8,7 +8,7 @@ function Header() {
             <nav className="nav">
                 <ul>
                     <li><Link to="/">Home</Link></li>
-                    <li><Link to="/form">Create New Blog</Link></li>
+                    <li><Link to="/form">Create or Edit Blog</Link></li>
                     <li><Link to="/blog">Blogs</Link></li>
                 </ul>
             </nav>

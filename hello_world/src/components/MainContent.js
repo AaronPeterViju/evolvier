@@ -13,7 +13,7 @@ function MainContent() {
                     Read Articles
                 </Link>
                 <Link to="/form" className="btn" style={{ textDecoration: 'none' }}>
-                    Create New Post
+                    Create or Edit Post
                 </Link>
             </div>
             
